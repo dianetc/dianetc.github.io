@@ -1,1 +1,1 @@
-go to  [diantc.github.io](https://dianetc.github.io/)
+go to  [dianetc.github.io](https://dianetc.github.io/)
