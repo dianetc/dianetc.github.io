@@ -1,0 +1,12 @@
+[user]
+	name = kvathupo
+	email = kalinda619@gmail.com
+[core]
+	filemode = false
+	autocrlf = input    # Assumes linux
+                        # Change to `true` if on Windows
+[merge]
+	tool = vimdiff
+	conflictstyle = diff3
+[mergetool]
+	prompt = false
