@@ -3,7 +3,10 @@
     <head>
         <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
         <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet"> 
+        <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet">
+	<style type="text/css" median="screen">
+		pre code { background-color: #eee; border: 1px solid #999; display: block; padding: 20px; }
+	</style>
     </head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <body class="bg-near-white near-Black tc">
@@ -19,20 +22,20 @@
 			<p> Simply choose which function you’re trying to test, create a testing method for it, tack on the <i>@diverge</i> decorate at the top with the corresponding two arguments and run! It’ll retun whether they diverge and if so, which function they diverge at. A trivial example below:
 
 			<pre>
-			<code>
-			from divergence import diverge
+				<code>
+				from divergence import diverge
 
-			args = {"arg1": (3,5), "arg2": (0,0)}
+				args = {"arg1": (3,5), "arg2": (0,0)}
 
-			@diverge(args)
-			def test_min(a,b):
-				return min(a,b)
+				@diverge(args)
+				def test_min(a,b):
+					return min(a,b)
 
-			test_min()
-			</code>
+				test_min()
+				</code>
 			</pre>
 
-			<p> Note, I hacked this tool together so its prone to bugs.</p>
+			<p> Note, I hacked this tool together so its pretty buggy.</p>
                 </ul>
 	    </div>
         </main>
