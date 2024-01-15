@@ -17,6 +17,8 @@ pre {margin: 0; padding: 0;} code {font-size: 75%;} pre code { margin: 0; backgr
 
 			<p> Debugging these types of systems can be difficult. Inputs to the same mathematical function might send you into wildly different areas of the code base (but that is not clear a priori). Especially in the case of SymPy, a very complex codebase which makes extensive use of Python's overloading capabilities.</p>
 
+			<p> My go-to debugging strategy in this scenario, is to run both input instances simultaneously then step through each in parallel, but this can be arduous (and super easy to miss the diverging point. </p>
+
 			<p> I created a small <a href="https://github.com/dianetc/divergence">debugging aid</a>. The tool helps you figure out <i>where</i> two different inputs diverge in their respective stack traces.</p>
 
 			<p> Simply choose which function you’re trying to test, create a testing method for it, tack on the <i>@diverge</i> decorate at the top with the corresponding two arguments and run! It’ll return whether they diverge and if so, which function they diverge at. A trivial example below:</p>
@@ -41,7 +43,7 @@ pre {margin: 0; padding: 0;} code {font-size: 75%;} pre code { margin: 0; backgr
                                 <li> Discrepancies in stack traces might not equate to meaningful differences in how things are working.</li>
                         </ul>
 			
-			<p> The code is very hacky, so I don't expect it to work super well, but if you have any feedback on the <i> approach </i> I took in solving this problem,<a href="mailto:dtchuindjo@gmail.com">I'd love to hear it!</a> </p>
+			<p> The code is very hacky, so I don't expect it to work super well, but if you have any feedback on the <i> approach </i> I took in solving this problem, <a href="mailto:dtchuindjo@gmail.com">I'd love to hear it!</a> </p>
 
                 </ul>
 	    </div>
