@@ -17,7 +17,7 @@ pre {margin: 0; padding: 0;} code {font-size: 75%;} pre code { margin: 0; backgr
 
 			<p> Debugging these types of systems can be difficult. Inputs to the same mathematical function might send you into wildly different areas of the code base (but that is not clear a priori). Especially in the case of SymPy, a very complex codebase which makes extensive use of Python's overloading capabilities.</p>
 
-			<p> My go-to debugging strategy in this scenario is to, run both input instances simultaneously then step through each in parallel, but this can be arduous (and super easy to miss the diverging point). </p>
+			<p> My go-to debugging strategy in this scenario is to, run both input instances simultaneously then step through each in parallel. This can be arduous and super easy to miss the diverging point. </p>
 
 			<p> I created a small debugging aid, called <a href="https://github.com/dianetc/divergence">divergence</a>. The tool helps you figure out <i>where</i> two different inputs diverge in their respective stack traces.</p>
 
