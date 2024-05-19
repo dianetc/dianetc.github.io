@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet">
+	<style type="text/css" media="screen">
+pre {margin: 0; padding: 0;} code {font-size: 75%;} pre code { margin: 0; background-color: #eee; border: 1px solid #999; display: block; padding: 5px; }
+	</style>
+    </head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <body class="bg-near-white near-Black tc">
+        <main class="pa3 center measure-wide lh-copy">
+            <div class="mw6 ph1">
+                <ul style="text-align:left; font-size:90%">
+			<p> <b>CAS</b> stands for computer algebra system and is any software meant to manipulate mathematical expressions. Popular software of this form are <a href="https://www.sympy.org/en/index.html">SymPy</a>, <a href="https://www.sagemath.org/">Sage</a>, and <a href="https://www.maplesoft.com/products/Maple/">Maple</a>.</p>
+
+			<p> Debugging these types of systems can be difficult. Inputs to the same mathematical function might send you into wildly different areas of the code base (but that is not clear a priori). Especially in the case of SymPy, a very complex codebase which makes extensive use of Python's overloading capabilities.</p>
+
+			<p> My go-to debugging strategy in this scenario is to, run both input instances simultaneously then step through each in parallel. This can be arduous and super easy to miss the diverging point. </p>
+
+			<p> I created a small debugging aid, called <a href="https://github.com/dianetc/divergence">divergence</a>. The tool helps you figure out <i>where</i> two different inputs diverge in their respective stack traces.</p>
+
+			<p> Simply choose which function you’re trying to test, create a testing method for it, tack on the <i>@diverge</i> decorate at the top with the corresponding two arguments and run! It’ll return whether they diverge and if so, which function they diverge at. A trivial example below:</p>
+	
+    <pre>
+    <code>
+    from divergence import diverge
+
+    args = {"arg1": (3,5), "arg2": (0,0)}
+
+    @diverge(args)
+    def test_min(a,b):
+	return min(a,b)
+
+    test_min()
+    </code>
+    </pre>
+
+    			<p> <b> A few remarks on the tool: </b> </p>			
+                        <ul>
+                                <li> Inputting the same arguments might garner slightly different stack traces and lead to a nonsensical diverging point.</li>
+                                <li> Discrepancies in stack traces might not equate to meaningful differences in how things are working.</li>
+                        </ul>
+			
+			<p> Divergence is very hacky, so I don't expect it to work super well, but if you have any feedback on the <i> approach </i> I took in trying to solve this problem, <a href="mailto:dtchuindjo@gmail.com">I'd love to hear it!</a> </p>
+
+                </ul>
+	    </div>
+        </main>
+    </body>
+</html>

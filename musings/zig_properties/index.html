@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet">
+	<style type="text/css" media="screen">
+pre {margin: 0; padding: 0;} code {font-size: 75%;} pre code { margin: 0; background-color: #eee; border: 1px solid #999; display: block; padding: 5px; }
+	</style>
+    </head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <body class="bg-near-white near-Black tc">
+        <main class="pa3 center measure-wide lh-copy">
+            <div class="mw6 ph1">
+                <ul style="text-align:left; font-size:90%">
+			<p> I think <a href="https://hypothesis.works/articles/what-is-property-based-testing/">property based testing (PBT)</a> is cool. I also wanted to try out Zig. Why not create a property based testing library in Zig? </p>
+
+			<p> This is what I spent a Saturday afternoon doing; learning Zig by working on a PBT library for the language. Now, calling it a library is a <b>stretch</b>.
+			Currently, it can only test properties of integers and floats, but its a start.</p>
+
+			<p> The entry point of the library is a <i>falsify</i> function. First, you dictate a property you which to check, along with the type (integers or float). Then, falsify will either return a case that breaks this property or that it found none. For example, one could test that the associativity of floats does not hold via:</p>
+    <pre>
+    <code>
+zigthesis.falsify(
+    struct {
+        pub fn pred(args: std.meta.Tuple(&amp.{f32, f32, f32})) bool {
+            const x = args[0];
+            const y = args[1];
+            const z = args[2];
+
+            return (x + y) + z == x + (y + z);
+        }
+    }.pred,
+    &amp[_]type{f32, f32, f32},
+    "Associativity of Floats"
+);
+    </code>
+    </pre>
+			<p> Check it out at <a href="https://github.com/dianetc/zigthesis">dianetc/zigthesis!</a></p>
+
+                </ul>
+	    </div>
+        </main>
+    </body>
+</html>
