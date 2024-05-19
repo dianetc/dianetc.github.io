@@ -21,19 +21,16 @@ pre {margin: 0; padding: 0;} code {font-size: 75%;} pre code { margin: 0; backgr
 			<p> The entry point of the library is a <i>falsify</i> function. First, you dictate a property you which to check, along with the type (integers or float). Then, falsify will either return a case that breaks this property or that it found none. For example, one could test that the associativity of floats does not hold via:</p>
     <pre>
     <code>
-zigthesis.falsify(
-    struct {
-        pub fn pred(args: std.meta.Tuple(&amp.{f32, f32, f32})) bool {
+    zigthesis.falsify(struct {
+        pub fn pred(args: struct { i32, i32, i32 }) bool {
             const x = args[0];
             const y = args[1];
             const z = args[2];
 
-            return (x + y) + z == x + (y + z);
+            return (x + y) * z == x * (y + z);
         }
-    }.pred,
-    &amp[_]type{f32, f32, f32},
-    "Associativity of Floats"
-);
+    }.pred, "Example 1");
+
     </code>
     </pre>
 			<p> Check it out at <a href="https://github.com/dianetc/zigthesis">dianetc/zigthesis!</a></p>
