@@ -18,16 +18,16 @@ pre {margin: 0; padding: 0;} code {font-size: 75%;} pre code { margin: 0; backgr
 			<p> This is what I spent a Saturday afternoon doing; learning Zig by working on a PBT library for the language. Now, calling it a library is a <b>stretch</b>.
 			Currently, it can only test properties of integers, floats, and strings but its a start.</p>
 
-			<p> The entry point of the library is a <i>falsify</i> function. First, you dictate a property (predicate) you which to verify along with the appropriate type. Then, falsify will either return a case that breaks this property or that it found none. For example, one could test that the commutativity of integers holds via:</p>
+			<p> The entry point of the library is a <i>falsify</i> function. First, you dictate a property (predicate) you which to verify along with the appropriate type(s). Then, falsify will either return a case that breaks this property or that it found none. For example, one could test that the commutativity of integers holds via:</p>
     <pre>
     <code>
 falsify(struct {
-    pub fn pred(args: struct {i32, i32}) bool {
-        const x = args[0];
-        const y = args[1];
+  pub fn pred(args: struct {i32, i32}) bool {
+      const x = args[0];
+      const y = args[1];
 
-        return x * y == y * x;
-    }
+      return x * y == y * x;
+ }
 }.pred, "Commutative");
 
     </code>
