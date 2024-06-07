@@ -21,14 +21,10 @@ pre {margin: 0; padding: 0;} code {font-size: 75%;} pre code { margin: 0; backgr
 			<p> The entry point of the library is a <i>falsify</i> function. First, you dictate a property (predicate) you which to verify along with the appropriate type(s). Then, falsify will either return a case that breaks this property or that it found none. For example, one could test that the commutativity of integers holds via:</p>
     <pre>
     <code>
-falsify(struct {
-  pub fn pred(args: struct {i32, i32}) bool {
-      const x = args[0];
-      const y = args[1];
-
+fn com(x: i32, y: i32) bool {
       return x * y == y * x;
- }
-}.pred, "Commutative");
+}
+try zigthesis.falsify(com,"Commutative");
 
     </code>
     </pre>
