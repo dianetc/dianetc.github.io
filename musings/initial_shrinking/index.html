@@ -65,7 +65,7 @@ pre {margin: 0; padding: 0;} code {font-size: 75%;} pre code { margin: 0; backgr
 
 			<p>  The current zigthesis implementation of "shrinking", done before reading the articles above, is a post-facto process. We are not shrinking as part of the generating process. First, a falsifying test case is generated then shrunk by doing basic math operations and retesting if the  new values still lead to failing the property; an extremely limiting methodology. See the use of shrinking <a href="https://github.com/dianetc/zigthesis/blob/main/src/zigthesis.zig#L27">here</a>. </p>
 
-			<p> To give an example of this limitation:  take the (trivial) test of whether a list of length three can have entries whose sum exceeds 100. Zigthesis first generates values to find a failing case such as {203, 76, 30}.  Then ``shrinking" is applied to it, giving us {0, 76, 39}. The simplest test case should be something like, {0,0,101}.</p>
+			<p> To give an example of this limitation:  <a href="https://github.com/dianetc/zigthesis/blob/main/tests/test_falsify.zig#L44">take the test of whether a list of length three can have entries whose sum exceeds 100</a>. Zigthesis first generates values to find a failing case such as {203, 76, 30}.  Then "shrinking" is applied to it, giving us {0, 76, 39}. The simplest test case <i> should </i> be something like, {0,0,101}.</p>
 
 			<p> Hypothesis and Falsify shrink within their generating process: </p>
 
