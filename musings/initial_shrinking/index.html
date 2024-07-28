@@ -15,7 +15,7 @@ pre {margin: 0; padding: 0;} code {font-size: 75%;} pre code { margin: 0; backgr
                 <ul style="text-align:left; font-size:90%">
 			<p> <a href="https://propertesting.com/book_shrinking.html">Shrinking</a> is the mechanism by which a property-based testing (PBT) library generates a <i> minimally </i>  falsifying case. </p>
 
-			<p>  Let's assume we which to test an implementation of a sort function. Unfortunately, the function is super buggy and thus our PBT library returns the falsifying case: </p>
+			<p>  Let's assume we wish to test an implementation of a sort function. Unfortunately, the function is super buggy and thus our PBT library returns the falsifying case: </p>
 			<div style="text-align: center; position: relative; padding-right: 30px;">
 				<span>[-42, -15, -8, -7, -3, -2, 0, 1, 6, 8, 23, 21, 31, 50]</span>
 				<span style="position: absolute; right: 0;">(1)</span>
@@ -48,12 +48,16 @@ pre {margin: 0; padding: 0;} code {font-size: 75%;} pre code { margin: 0; backgr
                                 <span style="position: absolute; right: 0;">(4)</span>
                         </div>
 
-			<p> While these examples are simple in nature, they illuminate the idea that many falsifying cases may be too complex or indecipherable.  Implementing a shrinking function is what allows a PBT library to return clearer results like (2) and (4) rather than (1) and (3). But how do you implement a shrinking function? </p>
+			<p> While these examples are simple in nature, they illuminate the idea that many falsifying cases may be too complex or indecipherable.  Implementing a shrinking function is what allows a PBT library to return clearer results like (2) and (4) rather than (1) and (3). But, how do you implement a shrinking function? </p>
 			
-			<p>  I recently went through <a href="https://well-typed.com/blog/2023/04/falsify/">Edsko de Vries blog post about Haskell's new PBT library, falsify</a> and accompanying <a href="https://dl.acm.org/doi/10.1145/3609026.3609733">paper</a>. Moreover, I perused various posts by David McIver <a href="https://hypothesis.works/articles">on hypothesis.works</a>. </p>
-			<p> To summarize the articles above at a very high level: generating inputs relies on pseudo-random number generators (PRNGs). Hypothesis introduced the idea that instead of shrinking generated values, one can shrink the samples produced by the PRNG. In their model, unfolding a PRNG gives us an infinite stream of samples and once unfolded, the focus becomes on parsing the stream of random samples. Haskell's Falsify takes the same idea, but posits that unfolding a PRNG gives us an infinite tree of samples. This shift in definition of what an unfolding is brings with it added benefits and hardships.</p>
+			<h1>How to Shrink?</h1>
 
-			<p> <b>  They articles cited above, so I'd highly recommend giving them a look for greater understanding! </b> </p>
+			<p>  I recently went through <a href="https://well-typed.com/blog/2023/04/falsify/">Edsko de Vries blog post about Haskell's new PBT library, falsify</a> along with the accompanying <a href="https://dl.acm.org/doi/10.1145/3609026.3609733">paper</a>. Moreover, I perused various posts by David McIver <a href="https://hypothesis.works/articles">on hypothesis.works</a>. </p>
+			<p> To summarize the articles above at a very high level: generating inputs relies on pseudo-random number generators (PRNGs). Hypothesis introduced the idea that instead of shrinking generated values, one can shrink the samples produced by the PRNG. In their model, unfolding a PRNG gives us an infinite stream of samples and once unfolded, the focus becomes on parsing the stream of random samples. Haskell's Falsify takes the same idea, but posits that unfolding a PRNG gives us an infinite <i> tree </i> of samples. This shift in definition of what an unfolding is brings with it added benefits and hardships.</p>
+
+			<p> <b>  The articles cited above are well written, so I'd highly recommend giving them a look for greater understanding! </b> </p>
+			
+			<h2> Shrinking in Zigthesis </h2>
 
 			<p>  The current zigthesis implementation of "shrinking" is a hacky, post-facto process. We are not shrinking as part of the generating process generating process. First, a falsifying test case is generated then shrunk by doing basic math operations and retesting if the  new values still lead to failing the property; an extremely limiting methodology. See the use of shrinking <a href="https://github.com/dianetc/zigthesis/blob/main/src/zigthesis.zig#L27">here</a> </p>.
 
