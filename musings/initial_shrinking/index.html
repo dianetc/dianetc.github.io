@@ -85,7 +85,7 @@
                 
                 <h3> Shrinking in Zigthesis </h3>
 
-                <p>  The current zigthesis implementation of "shrinking", done before reading the articles above, is a post-facto process. We are not shrinking as part of the generating process. First, a falsifying test case is generated then shrunk by doing basic math operations and retesting if the  new values still lead to failing the property; an extremely limiting methodology. See the use of shrinking <a href="https://github.com/dianetc/zigthesis/blob/main/src/zigthesis.zig#L27">here</a>. </p>
+                <p>  The current zigthesis implementation of "shrinking" is a post-facto process. We are not shrinking as part of the generating process. First, a falsifying test case is generated then shrunk by doing basic math operations and retesting if the new values still lead to failing the property. This is an extremely limiting methodology! See the current implementation of shrinking <a href="https://github.com/dianetc/zigthesis/blob/main/src/zigthesis.zig#L27">here</a>. </p>
 
                 <p> To give an example of this limitation:  <a href="https://github.com/dianetc/zigthesis/blob/main/tests/test_falsify.zig#L44">take the test of whether a list of length three can have entries whose sum exceeds 100</a>. Zigthesis first generates values to find a failing case such as {203, 76, 30}.  Then "shrinking" is applied to it, giving us {0, 76, 39}. The simplest test case <i> should </i> be something like, {0,0,101}.</p>
 
@@ -96,7 +96,7 @@
                     <li> <b> Falsify </b> does something similar but represents the unfolding of PRNG as an infinite tree of samples. Thinking of it this way alleviates the burden of deciding how to distribute samples to parsers and helps with predictability.</li>
                 </ul> 
 
-                <p>  My understanding of Falsify is still quite hazy. For example, I'm unsure how their process would fare, if one wishes to generate, say, real numbers uniformly (i.e., unbiased) across a range. Even so, I like their take and hope to implement something like it within zigthesis soon. </p>
+		<p>  My understanding of Falsify is still quite hazy. For example, I'm unsure how their process would fare, if one wishes to generate, say, real numbers uniformly (i.e., unbiased) across a range. Even so, I like their take and hope to implement something <i>like</i> it within zigthesis soon. </p>
 
             </div>
         </main>
