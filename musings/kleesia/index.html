@@ -6,20 +6,45 @@
         <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
         <style>
             body {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-                color: black;
+                font-family: monospace;
+                color: #333;
+                background-color: #faf9f6;
             }
             a {
-                color: darkgreen;
+                color: #6E5BAA;
                 text-decoration: underline;
+                transition: all 0.3s ease;
             }
             a:hover {
-                opacity: 0.8;
+                opacity: 0.7;
+            }
+            .content-box {
+                max-width: 700px;
+            }
+            .last-updated {
+                font-size: 0.8rem;
+                color: #888;
+                text-align: right;
+                margin-top: 2rem;
+            }
+            pre {
+                margin: 0;
+                padding: 0;
+            }
+            code {
+                font-size: 75%;
+            }
+            pre code {
+                margin: 0;
+                background-color: #f0eee9;
+                border: 1px solid #ccc;
+                display: block;
+                padding: 5px;
             }
         </style>
     </head>
-    <body class="bg-white tl">
-        <main class="pa3 center measure-wide lh-copy">
+    <body class="tl">
+        <main class="pa4 center content-box mw7 lh-copy">
             <div class="mw6 ph1">
 		    <p> Many platforms have attempted to build communities centered around research discussions, with notable examples including ResearchGate, Academia.edu, and the recent addition of Alphaxiv. However, these platforms often struggle to create an engaging user experience that encourages regular participation; they've not yet solved the classic chicken-and-egg problem of building a critical mass of <i>active</i> users.</p>
 
@@ -39,6 +64,10 @@
 
 		<p> In any case, if you have any questions, comments, or just want to chat about this, email me at dtchuindjo at gmail dot com! </p>
             </div>
+            
+            <p class="pt3">
+                <a href="../index.html">&larr; Back to musings</a>
+            </p>
         </main>
     </body>
 </html>

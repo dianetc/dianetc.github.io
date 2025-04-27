@@ -6,15 +6,17 @@
         <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
         <style>
             body {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-                color: black;
+                font-family: monospace;
+                color: #333;
+                background-color: #faf9f6;
             }
             a {
-                color: darkgreen;
+                color: #6E5BAA;
                 text-decoration: underline;
+                transition: all 0.3s ease;
             }
             a:hover {
-                opacity: 0.8;  
+                opacity: 0.7;
             }
             .semi-bold {
                 font-weight: 600;  
@@ -22,10 +24,19 @@
             .entry-spacing {
                 margin-bottom: 1em;  
             }
+            .content-box {
+                max-width: 700px;
+            }
+            .last-updated {
+                font-size: 0.8rem;
+                color: #888;
+                text-align: right;
+                margin-top: 2rem;
+            }
         </style>
     </head>
-    <body class="bg-white tl">
-        <main class="pa3 center measure-wide lh-copy">
+    <body class="tl">
+        <main class="pa4 center content-box mw7 lh-copy">
             <div class="mw6 ph1">
                 <div class="entry-spacing">
                     <p class="mv0">
@@ -100,7 +111,7 @@
                 </div>
             </div>
                 <p>
-                    <a href="../index.html">← Back to home</a>
+                    <a href="../index.html">&larr; Back to home</a>
                 </p>
         </main>
     </body>

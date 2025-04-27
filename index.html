@@ -6,32 +6,43 @@
         <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
         <style>
             body {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-                color: black;
+                font-family: monospace;
+                color: #333;
+                background-color: #faf9f6;
             }
             a {
-                color: darkgreen;
+                color: #6E5BAA;
                 text-decoration: underline;
+                transition: all 0.3s ease;
             }
             a:hover {
-                opacity: 0.8;  /* Slightly dims the link when hovered */
+                opacity: 0.7;
             }
             .semi-bold {
                 font-weight: 600;
             }
+            .content-box {
+                max-width: 700px;
+            }
+            .last-updated {
+                font-size: 0.8rem;
+                color: #888;
+                text-align: right;
+                margin-top: 2rem;
+            }
         </style>
     </head>
-    <body class="bg-white tl">
-        <div class="center pa3 measure-wide lh-copy">
+    <body class="tl">
+        <div class="center pa4 content-box mw7 lh-copy">
             <section>
                 <h1 class="tracked f2 lh-solid mt0 mb2 fw7">
                     Diane Tc
                 </h1>
-                <p>
+                <p class="f4 lh-copy mb4">
                     I'm a PhD Student in Operations Research at MIT. 
                 </p>
 
-		<p> <b> Research Interests </b> </p>
+		<p class="f5 ttu tracked mt4 mb2 fw6"> Research Interests </p>
                 <p>
                     My research focuses on designing algorithms to optimize NLP systems. I'm particularly interested in formalizing methods for reasoning-intensive problems in language models, optimizing retrieval mechanisms for knowledge-intensive tasks, and creating mathematical frameworks that can prove properties about language model reasoning while balancing performance with computational efficiency.
                 </p>
@@ -45,7 +56,7 @@
                     <a href="or-nlp-connection.html">How is OR related to NLP systems?</a>
                 </p>
 		
-		<p> <b> Resume </b></p>
+		<p class="f5 ttu tracked mt4 mb2 fw6"> Resume </p>
 
                 <p>
                     You can find my resume <a href="Tchuindjo_CV.pdf"> here!</a>
@@ -54,12 +65,12 @@
                 <p>
 		Before graduate school, I worked for a few years as a research engineer, primarily in defense contracting. I studied mathematics at the University of Maryland, College Park.                 </p>
 		
-		<p> <b> Contact </b> </p>
+		<p class="f5 ttu tracked mt4 mb2 fw6"> Contact </p>
                 <p>
                     Connect with me on <a href="https://github.com/dianetc">github</a> or email me at dtchuindjo at gmail dot com
                 </p>
 		
-		<p> <b> Random Musings </b></p>
+		<p class="f5 ttu tracked mt4 mb2 fw6"> Random Musings </p>
                 <p>
                     For more of my thoughts, check out the <a href="musings/">musings page</a>. 
                 </p>

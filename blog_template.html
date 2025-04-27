@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>A bit of Zig</title>
+        <title>TITLE_PLACEHOLDER</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
         <style>
@@ -45,21 +45,7 @@
     </head>
     <body class="tl">
         <main class="pa4 center content-box mw7 lh-copy">
-            <div class="mw6 ph1">
-                <p> I think <a href="https://labs.quansight.org/blog/integrating-hypothesis-into-sympy">property based testing (PBT)</a> is cool. I also wanted to try out Zig. Why not create a property based testing library in Zig? </p>
-
-                <p> This is what I spent a Saturday afternoon doing; learning Zig by working on a PBT library for the language. Now, calling it a library is a <b>stretch</b>.
-                Currently, it can only test properties of integers, floats, and strings but its a start.</p>
-
-                <p> The entry point of the library is a <i>falsify</i> function. First, you dictate a property (predicate) you which to verify along with the appropriate type(s). Then, falsify will either return a case that breaks this property or that it found none. For example, one could test that the commutativity of integers holds via:</p>
-
-                <pre><code>fn com(x: i32, y: i32) bool {
-      return x * y == y * x;
-}
-try zigthesis.falsify(com,"Commutative");</code></pre>
-
-                <p> Check out <a href="https://github.com/dianetc/zigthesis">zigthesis</a> for yourself!</p>
-            </div>
+            <!-- CONTENT_PLACEHOLDER -->
             
             <p class="pt3">
                 <a href="../index.html">&larr; Back to musings</a>
