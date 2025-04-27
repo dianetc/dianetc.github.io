@@ -57,6 +57,58 @@
                     <span>[-42, -15, -8, -7, -3, -2, 0, 1, 6, 8, 23, 21, 31, 50]</span>
                     <span style="position: absolute; right: 0;">(1)</span>
                 </div>
+
+                <p> While correct, a better falsifying case is, </p>
+ 
+                <div style="text-align: center; position: relative; padding-right: 30px;">
+                    <span>[1, 0]</span>
+                    <span style="position: absolute; right: 0;">(2)</span>
+                </div>
+ 
+                <p> Another example, is if we want to test the following distributive property: </p>
+ 
+                <div style="text-align: center; position: relative; padding-right: 30px;">
+                    <span>(x + y) * z = x * (y + z)</span>
+                </div>
+ 
+                <p> This property is wrong, but instead of throwing a seemingly random falsifying case such as, </p>
+ 
+                <div style="text-align: center; position: relative; padding-right: 30px;">
+                    <span>x = -287, y = 121, z = -670</span>                                                
+                    <span style="position: absolute; right: 0;">(3)</span>
+                </div>
+ 
+                <p> many PBT libraries will return something of the form, </p>
+ 
+                <div style="text-align: center; position: relative; padding-right: 30px;">
+                    <span>x = 1, y = 1, z = 0</span>                                                
+                    <span style="position: absolute; right: 0;">(4)</span>
+                </div>
+ 
+                <p> While these examples are simple in nature, they illuminate the idea that many falsifying cases may be too complex or indecipherable.  Implementing a shrinking function is what allows a PBT library to return clearer results like (2) and (4) rather than (1) and (3). </p>
+                
+                <h3> How to Shrink? </h3>
+ 
+                <p>  I recently went through <a href="https://well-typed.com/blog/2023/04/falsify/">Edsko de Vries blog post about Haskell's new PBT library, falsify</a> along with the accompanying <a href="https://dl.acm.org/doi/10.1145/3609026.3609733">paper</a>. Moreover, I perused various posts by David McIver <a href="https://hypothesis.works/articles">on hypothesis.works</a>. </p>
+ 
+                <p> To summarize the articles above at a very high level: generating inputs relies on pseudo-random number generators (PRNGs). Hypothesis introduced the idea that instead of shrinking generated values, one can shrink the samples produced by the PRNG. In their model, unfolding a PRNG gives us an infinite stream of samples and once unfolded, the focus becomes on parsing the stream of random samples. Haskell's Falsify takes the same idea, but posits that unfolding a PRNG gives us an infinite <i> tree </i> of samples. This shift in definition of what an unfolding is brings with it added benefits and hardships. </p>
+ 
+                <p> <b>  The articles cited above are well written, so I'd highly recommend giving them a look for greater understanding! </b> </p>
+                
+                <h3> Shrinking in Zigthesis </h3>
+ 
+                <p>  The current zigthesis implementation of "shrinking" is a post-facto process. We are not shrinking as part of the generating process. First, a falsifying test case is generated then shrunk by doing basic math operations and retesting if the new values still lead to failing the property. This is an extremely limiting methodology! See our current implementation of shrinking <a href="https://github.com/dianetc/zigthesis/blob/main/src/zigthesis.zig#L27">here</a>. </p>
+ 
+                <p> To give an example of this limitation:  <a href="https://github.com/dianetc/zigthesis/blob/main/tests/test_falsify.zig#L44">take the test of whether a list of length three can have entries whose sum exceeds 100</a>. Zigthesis first generates values to find a failing case such as {203, 76, 30}.  Then "shrinking" is applied to it, giving us {0, 76, 30}. The simplest test case <i> should </i> be something like, {0,0,101}.</p>
+ 
+                <p> Hypothesis and Falsify shrink within their generating process: </p>
+ 
+                <ul>
+                    <li> <b> Hypothesis </b> introduced  the idea that we can unfold the PRNG, get samples from this generator, and then parse these samples to produce values. </li>
+                    <li> <b> Falsify </b> does something similar but represents the unfolding of PRNG as an infinite tree of samples. Thinking of it this way alleviates the burden of deciding how to distribute samples to parsers and helps with predictability.</li>
+                </ul> 
+ 
+		<p>  My understanding of Falsify is still quite hazy. For example, I'm unsure how their process would fare, if one wishes to generate, say, real numbers uniformly (i.e., unbiased) across a range. Even so, I like their take and hope to implement something <i>like</i> it within zigthesis soon. </p>
             
             <p class="pt3">
                 <a href="../index.html">&larr; Back to musings</a>
