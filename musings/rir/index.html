@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Let's Reason Intensively</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
+        <style>
+            body {
+                font-family: monospace;
+                color: #333;
+                background-color: #faf9f6;
+            }
+            a {
+                color: #8B6914; /* Dark yellow/golden brown */
+                text-decoration: underline;
+                transition: all 0.3s ease;
+            }
+            a:hover {
+                opacity: 0.7;
+            }
+            .content-box {
+                max-width: 700px;
+            }
+            .last-updated {
+                font-size: 0.8rem;
+                color: #888;
+                text-align: right;
+                margin-top: 2rem;
+            }
+            pre {
+                margin: 0;
+                padding: 0;
+            }
+            code {
+                font-size: 75%;
+            }
+            pre code {
+                margin: 0;
+                background-color: #f0eee9;
+                border: 1px solid #ccc;
+                display: block;
+                padding: 5px;
+            }
+        </style>
+    </head>
+    <body class="tl">
+        <main class="pa4 center content-box mw7 lh-copy">
+            <div class="mw6 ph1">
+		    <p> We asked large language models (LLMs) to estimate the <i> fraction </i> of a proposed math solution that was correct. </p>
+
+		    <p> Turns out that while they can reason through complex problems they still have a hard time producing precise numerical outputs. </p>
+
+		    <p> We call tasks, like the one above, Reasoning-Intensive Regression (RiR) problems and below I'll talk about why this is a growing body of problems and what current tools we have at our disposal for solving them. </p>
+
+		    <p> RiR is about regression tasks that require sequential reasoning rather than shallow feature identification. Think scoring customer satisfaction, evaluating LLM outputs against rubrics, or advanced retrieval. As language models become more advanced, there's a growing need for finer/more granular judment scores (think world modeling). See the taxonomy below </p>
+
+		    <img src="rir_level_tax.png" alt='taxonomy'>
+
+		    <p> Given this, we ask: <i> Are there effective methods that are data- and compute-efficient for tackling ad-hoc RiR problems? </i> </p>
+
+		    <p> Your first question might be, why "ad-hoc" RiR problems? During our search for appropriate benchmarks we found the literare quite lacking. Most regression benchmarks were not reasoning-intensive enough, and for those that were, the papers would be published without the accompanying dataset. Consequently, out first job was to create simple RiR datasets!</p>
+
+		    <p> We take four tasks from the literature, like ProcessBench and rubric-based pairwise judges from RAG-QA, and cast them into RiR benchmarks. Take a look below, at an example entry for our task requiring the language model to predict where the proposed mathematical solution went wrong with a score between 0 and 10 (where 0 would mean the proposed solution failed at the begining, while 10 would represent failing at the very end). </p>
+
+		    <img src="rir_example_entry.png" alt='example-entry'>
+
+
+		    <p> Applying two standard methods reveals key tradeoffs. Fine-tuning encoders led to fine-grained learning but collapsed to mean predictions when reasoning was needed and prompting LLMs led to strong reasoning but coarse and imprecise scores. </p>
+
+		    <p> To resolve the issues described above, we developed MENTAT. This algorithm is composed of two phases: </p>
+		    <ul>
+			    <li> Phase 1: LLM analyzes prediction errors in lightweight batches to evolve prompts, learning from mistakes. </li>
+			    <li> Phase 2: Multiple rollouts from optimized prompt get aggregated by MLP trained on statistical features. </li>
+		    </ul>
+
+		    <img src="rir_mentat.png" alt='mentat-method'>
+
+		    <p> We test MENTAT on our four task and shows consistent improvements but reveals surprising trade-offs on the pairwise RAG comparison and essay grading tasks: unlike math errors, GPT-4.1 outperformed GPT-5 on those, driven by “overthinking” from the reasoning model. </p>
+
+		    <p> To recap: We define RIR as those requiring precise predictions, proper ranking, AND deep per-instance reasoning. Standard RiR methods struggle with balancing these! We introduce MENTAT, a simple algorithm that combines lightweight batched prompt evolution with ensemble learning. While MENTAT shows improvements on the standard methods, there is still much room for improvements and for better (less ad-hoc) benchmarks. </p>
+
+		    <p> This was a short summary of the paper, to get more details check it out <a href="https://arxiv.org/abs/2508.21762"> here </a>. If you have any questions or just want to chat about this stuff, feel free to email me! </p>
+
+
+            </div>
+            
+            <p class="pt3">
+                <a href="../index.html">&larr; Back to musings</a>
+            </p>
+        </main>
+    </body>
+</html>
