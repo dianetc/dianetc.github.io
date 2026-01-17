@@ -77,40 +77,7 @@
     <body class="tl">
         <main class="pa4 center content-box mw7 lh-copy">
             <div class="mw6 ph1">
-                <p>I recently spent a couple of days trying to train a convolutional neural network (CNN) for information retrieval. What initially seemed like a promising direction ended up being a dead end for reasons that, in hindsight, were obvious. In this blog post, I'll detail my motivations for this direction, my implementation, and what went wrong.</p>
-
-                <p>Let's begin with why I thought to use CNNs, models normally used for visual data, in the first place.</p>
-
-                <h3>Reasoning-Intensive Information Retrieval</h3>
-
-                <p>Recent advances in information retrieval have shifted focus towards reasoning-intensive information retrieval (RiiR): queries that require intensive reasoning to retrieve the most pertinent documents from a large corpus. An example would be a medical query that requires extensive search through medical journals and reasoning beyond semantic matching to determine the proper diagnosis.</p>
-
-                <p>Before I dive into how CNNs got mixed up in all of this, I'll first give a rough outline of how ColBERT, an older retrieval model, works. ColBERT is a <i>late interaction</i> model: it encodes queries and documents independently (like a dual encoder) but retains token-level embeddings rather than collapsing them into a single vector. The "late" refers to when query-document interaction occurs, after encoding, at scoring time, but at token granularity. Specifically, ColBERT builds a similarity matrix between query and document tokens, then derives a relevance score via MaxSim: the sum of maximum similarities for each query token across all document tokens.</p>
-
-                <h4>The Problem Formulation</h4>
-
-                <p>A natural question arises: do similarity matrices for query/gold-document pairings look different from their query/non-gold-document counterparts? More specifically, if we construct a similarity matrix and "highlight" the MaxSim at each row, do we see visual cues that allow us to differentiate between query/gold-doc, query/normal-doc, and query/bad-doc pairings? Here, I used BM25, a lexical method that is extremely cheap and fast, to initially rank the documents. I took the "normal doc" to be BM25's top-1 result and the "bad doc" to be one that falls outside the top 100. I tried this on a few queries, and you can see an example below:</p>
-
-                <img src="colbert_viz_aops_q99.png" alt="ColBERT similarity matrices visualization" style="max-width: 100%; margin: 1.5em auto; display: block;">
-                <p class="caption">Figure 1: A query from the Art of Problem Solving (AoPS) split of BRIGHT with similarity matrices for its gold document, normal document, and bad document.</p>
-
-                <p>As you can see from Figure 1, there are some subtle cues. If we define <i>tokens used</i> as the number of document tokens that get "highlighted" (i.e., are the maximum of at least one row) and <i>max single usage</i> as how often the most frequently used token appears, then query/gold-document pairings tend to be higher on the former and lower on the latter compared to query/non-gold-document pairings. That is, there's less "column" domination: the similarity matrix for gold documents looks flat because many tokens contribute, while for non-gold documents there's more clear token dominance, visible as "spikes."</p>
-
-                <p>Given these visual cues, I was curious whether a CNN could learn to disambiguate between gold documents and non-gold documents given a query.</p>
-
-		<p>I'll note here that the idea of treating text matching as image recognition isn't new. Pang, Lan, and colleagues explored this direction extensively in the mid-2010s . Examples include MatchPyramid (2016) applied CNNs to word-level interaction matrices, DeepRank (2017) added detection and aggregation stages. Results were mixed; the approach never decisively beat traditional methods. Dense retrievers and late interaction models like ColBERT largely superseded this line of work. I was curious whether revisiting the visual intuition with ColBERT's richer token-level representations might yield something, especially for reasoning-intensive queries where the patterns seemed visually distinct.</p>
-
-                <h3>Building the Pipeline</h3>
-
-                <p>I wanted to see how powerful this CNN could be given only a small set of queries to train on. Ideally, if it could disambiguate well, it could serve as an efficient and performance-boosting final step for a retrieval system. Consequently, I focused training specifically on the four hardest splits of BRIGHT: LeetCode, AoPS, Economics, and Robotics. Training was done individually (yielding four separate CNNs). For each split, I used only 30% for training, which amounted to 30–42 queries depending on the split. During training, I gave the CNN samples only from BM25's top 100 documents (along with the gold documents). At test time, I applied the same method: use BM25 to retrieve the top 100, add in the gold documents (since BM25 has poor recall on reasoning-intensive queries), shuffle, and then feed this to the CNN for reranking.</p>
-
-                <h4>Training the CNN.</h4>
-
-                <p>The CNN treats ColBERT similarity matrices as 128×128 grayscale images, using a 4-layer architecture (32 → 64 → 128 → 256 channels) with batch normalization, followed by an MLP head. Specifically, ColBERT (frozen) produces a similarity matrix, which is resized to 128×128 and treated as a grayscale image. The CNN progressively increases channels (1 → 32 → 64 → 128 → 256) while halving spatial dimensions (128 → 64 → 32 → 16 → 8) via max pooling. The final 8×8×256 = 16,384 features are flattened and passed through an MLP (16384 → 256 → 128 → 1) to produce a single relevance score. Training used listwise cross-entropy loss over candidate documents, with learning rate 10<sup>-4</sup>, AdamW optimizer, and 15 epochs.</p>
-
-                <h3>The CNN Leads to a 2x Performance Increase</h3>
-
-                <p>Initial results seemed very promising....</p>
+		    <p>I recently spent a couple of days trying to train a convolutional neural network (CNN) to rerank documents using ColBERT similarity matrices as images and it appeared to double ColBERT's performance on various splits of BRIGHT, a reasoning-intensive retrieval benchmark</p> 
 
                 <table>
                     <thead>
@@ -141,7 +108,38 @@
                 </table>
                 <p class="caption">Table 1: Reranking performance (nDCG@10) with BM25 top-100 candidates (with gold documents additionally infused) on the test sets. For most splits, the CNN led to a 2× increase in nDCG@10.</p>
 
-                <p>My immediate next step was to test a trained model on an expanded candidate set. I wanted to see how the CNN performed when given BM25's top 250, 500, 750, and 1000. This is with the same test queries, only candidate depth changes. As shown below, the system collapsed <i>immediately</i>:</p>
+		<p>Unfortunately, what initially seemed like a promising direction ended up being a dead end for reasons that, in hindsight, were obvious. The model learned spurious correlations and collapsed completely when tested on larger candidate sets. In this blog post, I'll detail my motivations for this direction, my implementation, and what went wrong.</p>
+
+                <h3>Reasoning-Intensive Information Retrieval</h3>
+
+                <p>Recent advances in information retrieval have shifted focus towards reasoning-intensive information retrieval (RiiR): queries that require intensive reasoning to retrieve the most pertinent documents from a large corpus. An example would be a medical query that requires extensive search through medical journals and reasoning beyond semantic matching to determine the proper diagnosis.</p>
+
+                <p>Before I dive into how CNNs got mixed up in all of this, I'll first give a rough outline of how ColBERT, an older retrieval model, works. ColBERT is a <i>late interaction</i> model: it encodes queries and documents independently (like a dual encoder) but retains token-level embeddings rather than collapsing them into a single vector. The "late" refers to when query-document interaction occurs, after encoding, at scoring time, but at token granularity. Specifically, ColBERT builds a similarity matrix between query and document tokens, then derives a relevance score via MaxSim: the sum of maximum similarities for each query token across all document tokens.</p>
+
+                <h4>The Problem Formulation</h4>
+
+                <p>A natural question arises: do similarity matrices for query/gold-document pairings look different from their query/non-gold-document counterparts? More specifically, if we construct a similarity matrix and "highlight" the MaxSim at each row, do we see visual cues that allow us to differentiate between query/gold-doc, query/normal-doc, and query/bad-doc pairings? Here, I used BM25, a lexical method that is extremely cheap and fast, to initially rank the documents. I took the "normal doc" to be BM25's top-1 result and the "bad doc" to be one that falls outside the top 100. I tried this on a few queries, and you can see an example below:</p>
+
+                <img src="colbert_viz_aops_q99.png" alt="ColBERT similarity matrices visualization" style="max-width: 100%; margin: 1.5em auto; display: block;">
+                <p class="caption">Figure 1: A query from the Art of Problem Solving (AoPS) split of BRIGHT with similarity matrices for its gold document, normal document, and bad document.</p>
+
+                <p>As you can see from Figure 1, there are some subtle cues. If we define <i>tokens used</i> as the number of document tokens that get "highlighted" (i.e., are the maximum of at least one row) and <i>max single usage</i> as how often the most frequently used token appears, then query/gold-document pairings tend to be higher on the former and lower on the latter compared to query/non-gold-document pairings. That is, there's less "column" domination: the similarity matrix for gold documents looks flat because many tokens contribute, while for non-gold documents there's more clear token dominance, visible as "spikes."</p>
+
+                <p>Given these visual cues, I was curious whether a CNN could learn to disambiguate between gold documents and non-gold documents given a query.</p>
+
+		<p>I'll note here that the idea of treating text matching as image recognition isn't new. Pang, Lan, and colleagues explored this direction extensively in the mid-2010s . Examples include MatchPyramid (2016) applied CNNs to word-level interaction matrices, DeepRank (2017) added detection and aggregation stages. Results were mixed; the approach never decisively beat traditional methods. Dense retrievers and late interaction models like ColBERT largely superseded this line of work. I was curious whether revisiting the visual intuition with ColBERT's richer token-level representations might yield something, especially for reasoning-intensive queries where the patterns seemed visually distinct.</p>
+
+                <h3>Building the Pipeline</h3>
+
+                <p>I wanted to see how powerful this CNN could be given only a small set of queries to train on. Ideally, if it could disambiguate well, it could serve as an efficient and performance-boosting final step for a retrieval system. Consequently, I focused training specifically on the four hardest splits of BRIGHT: LeetCode, AoPS, Economics, and Robotics. Training was done individually (yielding four separate CNNs). For each split, I used only 30% for training, which amounted to 30–42 queries depending on the split. During training, I gave the CNN samples only from BM25's top 100 documents (along with the gold documents). At test time, I applied the same method: use BM25 to retrieve the top 100, add in the gold documents (since BM25 has poor recall on reasoning-intensive queries), shuffle, and then feed this to the CNN for reranking.</p>
+
+                <h4>Training the CNN.</h4>
+
+                <p>The CNN treats ColBERT similarity matrices as 128×128 grayscale images, using a 4-layer architecture (32 → 64 → 128 → 256 channels) with batch normalization, followed by an MLP head. Specifically, ColBERT (frozen) produces a similarity matrix, which is resized to 128×128 and treated as a grayscale image. The CNN progressively increases channels (1 → 32 → 64 → 128 → 256) while halving spatial dimensions (128 → 64 → 32 → 16 → 8) via max pooling. The final 8×8×256 = 16,384 features are flattened and passed through an MLP (16384 → 256 → 128 → 1) to produce a single relevance score. Training used listwise cross-entropy loss over candidate documents, with learning rate 10<sup>-4</sup>, AdamW optimizer, and 15 epochs.</p>
+
+                <h3>The Collapse</h3>
+
+                <p>My immediate next step was to test a trained model on an expanded candidate set. I wanted to see how the CNN performed when given BM25's top 250, 500, 750, and 1000. This is with the same test queries, only candidate depth changes. As shown below, the system collapsed <i>immediately</i>. I then retrained the CNN models, this time sampling from BM25's top 1000 instead of the top 100. This minimized the collapse, but the results were still unimpressive. The k=1000 model was much more robust but lost the sharp edge at top-100. What was going on?</p>
 
                 <table>
                     <thead>
@@ -156,7 +154,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>CNN-Sim (Ours)</td>
+                            <td>CNN-Sim (trained k=100)</td>
                             <td><b>0.248</b></td>
                             <td>0.10</td>
                             <td>0.04</td>
@@ -164,34 +162,8 @@
                             <td>0.02</td>
                         </tr>
                         <tr>
-                            <td>ColBERTv2</td>
-                            <td>0.128</td>
-                            <td><b>0.11</b></td>
-                            <td><b>0.10</b></td>
-                            <td><b>0.10</b></td>
-                            <td><b>0.09</b></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p class="caption">Table 2: Testing the CNN model for the Economics split on an expanded candidate set.</p>
-
-                <p>I then retrained the CNN models, this time sampling from BM25's top 1000 instead of the top 100. This minimized the collapse, but the results were still unimpressive. The k=1000 model was much more robust but lost the sharp edge at top-100 (Table 3). What was going on?</p>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Method</th>
-                            <th>100</th>
-                            <th>250</th>
-                            <th>500</th>
-                            <th>750</th>
-                            <th>1000</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>CNN-Sim (Ours)</td>
-                            <td><b>0.165</b></td>
+                            <td>CNN-Sim (trained k=1000)</td>
+                            <td>0.165</td>
                             <td><b>0.114</b></td>
                             <td>0.093</td>
                             <td>0.088</td>
@@ -207,7 +179,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <p class="caption">Table 3: Testing the CNN model (trained on k=1000) for the Economics split across candidate set sizes.</p>
+                <p class="caption">Table 2: CNN performance on the Economics split across candidate set sizes. The k=100 model collapses catastrophically; the k=1000 model is more robust but loses its edge.</p>
 
                 <div id="collapse-visualization" style="margin: 3em 0;">
                     <h3>Visualizing the Collapse</h3>
@@ -227,79 +199,79 @@
 
                 <p>I decided to change the pipeline: have ColBERT first rerank the documents given BM25's top 1000 (with gold documents infused), then have the CNN rerank ColBERT's rankings.</p>
 
-                <p>Unfortunately, this proved unfruitful (Table 5). The CNN models trained on k=100 didn't improve ColBERT's ranking. Initially, I believed recall might have been the issue, but using a stronger model as the intermediary, such as Qwen3-reranker-0.6B, didn't help either (Table 6).</p>
+                <p>Unfortunately, this proved unfruitful. The CNN models trained on k=100 didn't improve ColBERT's ranking. Initially, I believed recall might have been the issue, but using a stronger model as the intermediary, such as Qwen3-reranker-0.6B, didn't help either (Table 3).</p>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Method</th>
-                            <th>Economics</th>
-                            <th>AoPS</th>
-                            <th>LeetCode</th>
-                            <th>Robotics</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>CNN-Sim (Ours)</td>
-                            <td>0.072</td>
-                            <td><b>0.185</b></td>
-                            <td>0.162</td>
-                            <td><b>0.091</b></td>
-                        </tr>
-                        <tr>
-                            <td>ColBERTv2</td>
-                            <td><b>0.095</b></td>
-                            <td>0.156</td>
-                            <td><b>0.283</b></td>
-                            <td>0.077</td>
-                        </tr>
-                        <tr>
-                            <td>Recall %</td>
-                            <td>38.1%</td>
-                            <td>41.4%</td>
-                            <td>48.4%</td>
-                            <td>33.9%</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p class="caption">Table 5: Pipeline results: having the CNN rerank ColBERTv2's top-100. Recall here means the percentage of gold documents ColBERT ranked in its top 100. </p>
-                
-		<table>
-                    <thead>
-                        <tr>
-                            <th>Method</th>
-                            <th>Economics</th>
-                            <th>AoPS</th>
-                            <th>LeetCode</th>
-                            <th>Robotics</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>CNN-Sim (Ours)</td>
-                            <td>0.102</td>
-                            <td><b>0.232</b></td>
-                            <td>0.198</td>
-                            <td><b>0.181</b></td>
-                        </tr>
-                        <tr>
-                            <td>Qwen3-Reranker-0.6B</td>
-                            <td><b>0.156</b></td>
-                            <td>0.156</td>
-                            <td><b>0.372</b></td>
-                            <td>0.121</td>
-                        </tr>
-                        <tr>
-                            <td>Recall %</td>
-                            <td>56.9%</td>
-                            <td>42.9%</td>
-                            <td>78.6%</td>
-                            <td>54.4%</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p class="caption">Table 6: Pipeline results: having the CNN rerank Qwen's top-100. Recall here means the percentage of gold documents Qwen ranked in its top 100.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Base Model</th>
+      <th>Method</th>
+      <th>Economics</th>
+      <th>AoPS</th>
+      <th>LeetCode</th>
+      <th>Robotics</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- ColBERTv2 block -->
+    <tr>
+      <td rowspan="3">ColBERTv2</td>
+      <td>CNN-Sim (Ours)</td>
+      <td>0.072</td>
+      <td><b>0.185</b></td>
+      <td>0.162</td>
+      <td><b>0.091</b></td>
+    </tr>
+    <tr>
+      <td>ColBERTv2</td>
+      <td><b>0.095</b></td>
+      <td>0.156</td>
+      <td><b>0.283</b></td>
+      <td>0.077</td>
+    </tr>
+    <tr>
+      <td>Recall %</td>
+      <td>38.1%</td>
+      <td>41.4%</td>
+      <td>48.4%</td>
+      <td>33.9%</td>
+    </tr>
+
+    <!-- separator row (optional) -->
+    <tr>
+      <td colspan="6" style="height: 8px;"></td>
+    </tr>
+
+    <!-- Qwen block -->
+    <tr>
+      <td rowspan="3" style="border-top: 2px solid #eee;">Qwen3-Reranker-0.6B</td>
+      <td>CNN-Sim (Ours)</td>
+      <td>0.102</td>
+      <td><b>0.232</b></td>
+      <td>0.198</td>
+      <td><b>0.181</b></td>
+    </tr>
+    <tr>
+      <td>Qwen3-Reranker-0.6B</td>
+      <td><b>0.156</b></td>
+      <td>0.156</td>
+      <td><b>0.372</b></td>
+      <td>0.121</td>
+    </tr>
+    <tr>
+      <td>Recall %</td>
+      <td>56.9%</td>
+      <td>42.9%</td>
+      <td>78.6%</td>
+      <td>54.4%</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="caption">
+  Table 3: Pipeline results: CNN reranking the base model's top-100 (ColBERTv2 or Qwen3-Reranker-0.6B).
+  Recall is the percentage of gold documents the base model ranked in its top 100.
+</p>
 
                 <h3>The Culprit: Distributional Shift</h3>
 
@@ -309,7 +281,7 @@
 
                 <h4>The Fundamental Limitation.</h4>
 
-                <p>This failure reveals a deeper issue. Similarity matrices capture <i>which</i> tokens align and <i>how many</i> align, but not <i>how they logically connect</i>. For reasoning-intensive retrieval, relevance depends on token interactions <i>within</i> the document which is structure that is invisible to the query-document similarity matrix. A gold document and a plausible-but-wrong document may have identical similarity matrices, both flat and distributed. The difference lies in the reasoning structure: how evidence chains together to answer the query. This structure exists <i>within</i> the document, in <i>how</i> its content interacts to answer the query but isn't clear from a similarity matrix alone.</p>
+                <p>This failure reveals a deeper issue. Similarity matrices capture <i>which</i> tokens align and <i>how many</i> align, but not <i>how they logically connect</i>. For reasoning-intensive retrieval, relevance depends on token interactions <i>within</i> the document which is structure that is invisible to the query-document similarity matrix. A gold document and a plausible-but-wrong document may have identical similarity matrices, both flat and distributed. The difference lies in the reasoning structure: how evidence chains together to answer the query. This structure exists <i>within</i> the document, in <i>how</i> its content interacts to answer the query but that isn't clear from a similarity matrix alone.</p>
 
                 <h3>Conclusion</h3>
 
