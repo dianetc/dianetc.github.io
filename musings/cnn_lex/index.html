@@ -219,7 +219,7 @@
                     </p>
 
                     <div style="background-color: white; border-radius: 8px; border: 1px solid #ccc; padding: 24px; margin-bottom: 24px;">
-                        <canvas id="collapseChart" style="max-height: 400px;"></canvas>
+                        <canvas id="collapseChart" style="height: 400px; min-height: 300px;"></canvas>
                     </div>
                 </div>
 
@@ -255,7 +255,7 @@
                             <td>0.077</td>
                         </tr>
                         <tr>
-                            <td>ColBERTv2 Recall %</td>
+                            <td>Recall %</td>
                             <td>38.1%</td>
                             <td>41.4%</td>
                             <td>48.4%</td>
@@ -263,7 +263,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <p class="caption">Table 5: Pipeline results: having the CNN rerank ColBERTv2's top-100.</p>
+                <p class="caption">Table 5: Pipeline results: having the CNN rerank ColBERTv2's top-100. Recall here means the percentage of gold documents ColBERT ranked in its top 100. </p>
                 
 		<table>
                     <thead>
@@ -291,7 +291,7 @@
                             <td>0.121</td>
                         </tr>
                         <tr>
-                            <td>Qwen3 Recall %</td>
+                            <td>Recall %</td>
                             <td>56.9%</td>
                             <td>42.9%</td>
                             <td>78.6%</td>
@@ -299,7 +299,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <p class="caption">Table 6: Pipeline results: having the CNN rerank Qwen's top-100.</p>
+                <p class="caption">Table 6: Pipeline results: having the CNN rerank Qwen's top-100. Recall here means the percentage of gold documents Qwen ranked in its top 100.</p>
 
                 <h3>The Culprit: Distributional Shift</h3>
 
@@ -388,7 +388,7 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             display: true,
