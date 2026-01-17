@@ -85,8 +85,6 @@
 
                 <p>Recent advances in information retrieval have shifted focus towards reasoning-intensive information retrieval (RiiR): queries that require intensive reasoning to retrieve the most pertinent documents from a large corpus. An example would be a medical query that requires extensive search through medical journals and reasoning beyond semantic matching to determine the proper diagnosis.</p>
 
-                <p>Current state-of-the-art models, such as the Qwen3-rerankers, fall short of performing well on reasoning-intensive retrieval benchmarks such as BRIGHT and TEMPO.</p>
-
                 <p>Before I dive into how CNNs got mixed up in all of this, I'll first give a rough outline of how ColBERT, an older retrieval model, works. ColBERT is a <i>late interaction</i> model: it encodes queries and documents independently (like a dual encoder) but retains token-level embeddings rather than collapsing them into a single vector. The "late" refers to when query-document interaction occurs, after encoding, at scoring time, but at token granularity. Specifically, ColBERT builds a similarity matrix between query and document tokens, then derives a relevance score via MaxSim: the sum of maximum similarities for each query token across all document tokens.</p>
 
                 <h4>The Problem Formulation</h4>
