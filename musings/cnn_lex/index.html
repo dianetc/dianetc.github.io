@@ -243,7 +243,7 @@
 
                 <p>I decided to change the pipeline: have ColBERT first rerank the documents given BM25's top 1000 (with gold documents infused), then have the CNN rerank ColBERT's rankings.</p>
 
-                <p>Unfortunately, this proved unfruitful (Table 5). The CNN models trained on k=100 didn't improve ColBERT's ranking. Initially, I believe recall might have been the issue, but using a stronger model as the intermediary, such as Qwen3-reranker-0.6B, didn't help either (Table 6).</p>
+                <p>Unfortunately, this proved unfruitful (Table 5). The CNN models trained on k=100 didn't improve ColBERT's ranking. Initially, I believed recall might have been the issue, but using a stronger model as the intermediary, such as Qwen3-reranker-0.6B, didn't help either (Table 6).</p>
 
                 <table>
                     <thead>
@@ -319,7 +319,7 @@
 
                 <h3>The Culprit: Distributional Shift</h3>
 
-                <p>ColBERT's/Qwen's top-100 looks completely different from BM25's top-100 in terms of similarity matrix structure. ColBERT's/Qwen's "mistakes" are semantically plausible but wrong for reasoning—a totally different error pattern than BM25's lexical false positives. <b>The goal was to train a CNN to find patterns that translate to relevance, but in reality it learned patterns that translate to high lexical matches.</b> High lexical matches in the top 100 correlate with irrelevance, but the injected gold documents, by virtue of not being in the top 100, don't have high lexical matches. When expanding to the top 1000, the bottom 900 also lack high lexical matches, so whatever signal the CNN learned collapses (gold and the bottom 900 become indistinguishable).</p>
+                <p>ColBERT's/Qwen's top-100 looks completely different from BM25's top-100 in terms of similarity matrix structure. ColBERT's/Qwen's "mistakes" are semantically plausible but wrong for reasoning—a totally different error pattern than BM25's lexical false positives. <b>Essentially, the goal was to train a CNN to find patterns that translate to relevance, but in reality it learned patterns that translate to high lexical matches.</b> High lexical matches in the top 100 correlate with irrelevance, but the injected gold documents, by virtue of not being in the top 100, don't have high lexical matches. When expanding to the top 1000, the bottom 900 also lack high lexical matches, so whatever signal the CNN learned collapses (gold and the bottom 900 become indistinguishable).</p>
 
                 <p>Correlation analysis between matrix features and CNN scores reveals the mechanism:</p>
 
@@ -338,18 +338,18 @@
                             <td>Prefers uniform matrices</td>
                         </tr>
                         <tr>
-                            <td>Density (s<sub>ij</sub> > 0.7)</td>
+                            <td>Density </td>
                             <td>-0.23</td>
                             <td>Avoids strong token matches</td>
                         </tr>
                     </tbody>
                 </table>
 
-                <p>The CNN learned: <i>"flat, uniform matrices → relevant."</i> High variance and sparsity predict <i>low</i> CNN scores. The model captured texture statistics, not semantic relevance. Within BM25's top-100, a distributional quirk exists: gold documents exhibit dense but structured similarity patterns, while BM25 negatives show sharp lexical spikes. The CNN found a texture shortcut separating these classes. However, at ranks outside the top 100, many documents have diffuse, uniform similarity (vague semantic overlap) with low variance, exactly what the CNN learned to prefer.</p>
+                <p>The CNN learned: <i>"flat, uniform matrices → relevant."</i> High variance and sparsity predict <i>low</i> CNN scores. The model captured texture statistics, not semantic relevance. Within BM25's top-100, a distributional quirk exists: gold documents exhibit dense but structured similarity patterns, while BM25 negatives show sharp lexical spikes. The CNN found a texture shortcut separating these classes. However, at ranks outside the top 100, many documents have uniform similarity (vague semantic overlap) with low variance, exactly what the CNN learned to prefer.</p>
 
                 <h4>The Fundamental Limitation.</h4>
 
-                <p>This failure reveals a deeper issue. Similarity matrices capture <i>which</i> tokens align and <i>how many</i> align, but not <i>how they logically connect</i>. For reasoning-intensive retrieval, relevance depends on token interactions <i>within</i> the document which is structure that is invisible to the query-document similarity matrix. A gold document and a plausible-but-wrong document may have identical similarity matrices, both flat and distributed. The difference lies in reasoning structure: how evidence chains together to answer the query. This structure exists <i>within</i> the document, in <i>how</i> its content interacts to answer the query which isn't clear from a similarity matrix.</p>
+                <p>This failure reveals a deeper issue. Similarity matrices capture <i>which</i> tokens align and <i>how many</i> align, but not <i>how they logically connect</i>. For reasoning-intensive retrieval, relevance depends on token interactions <i>within</i> the document which is structure that is invisible to the query-document similarity matrix. A gold document and a plausible-but-wrong document may have identical similarity matrices, both flat and distributed. The difference lies in the reasoning structure: how evidence chains together to answer the query. This structure exists <i>within</i> the document, in <i>how</i> its content interacts to answer the query but isn't clear from a similarity matrix alone.</p>
 
                 <h3>Conclusion</h3>
 
