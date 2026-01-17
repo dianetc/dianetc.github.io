@@ -77,7 +77,7 @@
     <body class="tl">
         <main class="pa4 center content-box mw7 lh-copy">
             <div class="mw6 ph1">
-		    <p>I recently spent a couple of days trying to train a convolutional neural network (CNN) to rerank documents using ColBERT similarity matrices as images and it appeared to double ColBERT's performance on various splits of BRIGHT, a reasoning-intensive retrieval benchmark</p> 
+		    <p>I recently spent a couple of days trying to train a convolutional neural network (CNN) to rerank documents using ColBERT similarity matrices as images. It appeared to double ColBERT's performance on various splits of BRIGHT, a reasoning-intensive retrieval benchmark (see below).</p> 
 
                 <table>
                     <thead>
@@ -125,9 +125,9 @@
 
                 <p>As you can see from Figure 1, there are some subtle cues. If we define <i>tokens used</i> as the number of document tokens that get "highlighted" (i.e., are the maximum of at least one row) and <i>max single usage</i> as how often the most frequently used token appears, then query/gold-document pairings tend to be higher on the former and lower on the latter compared to query/non-gold-document pairings. That is, there's less "column" domination: the similarity matrix for gold documents looks flat because many tokens contribute, while for non-gold documents there's more clear token dominance, visible as "spikes."</p>
 
-                <p>Given these visual cues, I was curious whether a CNN could learn to disambiguate between gold documents and non-gold documents given a query.</p>
+		<p><b>Given these visual cues, I was curious whether a CNN could learn, from similarity matrices, to disambiguate between gold documents and non-gold documents for a given query.</b></p>
 
-		<p>I'll note here that the idea of treating text matching as image recognition isn't new. Pang, Lan, and colleagues explored this direction extensively in the mid-2010s . Examples include MatchPyramid (2016) applied CNNs to word-level interaction matrices, DeepRank (2017) added detection and aggregation stages. Results were mixed; the approach never decisively beat traditional methods. Dense retrievers and late interaction models like ColBERT largely superseded this line of work. I was curious whether revisiting the visual intuition with ColBERT's richer token-level representations might yield something, especially for reasoning-intensive queries where the patterns seemed visually distinct.</p>
+		<p>I'll note here, that the idea of treating text matching as image recognition isn't new. Pang, Lan, and colleagues explored this direction extensively in the mid-2010s . Examples include MatchPyramid (2016) applied CNNs to word-level interaction matrices, DeepRank (2017) added detection and aggregation stages. Results were mixed; the approach never decisively beat traditional methods. Dense retrievers and late interaction models like ColBERT largely superseded this line of work. I was curious whether revisiting the visual intuition with ColBERT's richer token-level representations might yield something, especially for reasoning-intensive queries where the patterns seemed visually distinct.</p>
 
                 <h3>Building the Pipeline</h3>
 
