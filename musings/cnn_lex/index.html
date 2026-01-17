@@ -305,30 +305,6 @@
 
                 <p>ColBERT's/Qwen's top-100 looks completely different from BM25's top-100 in terms of similarity matrix structure. ColBERT's/Qwen's "mistakes" are semantically plausible but wrong for reasoning—a totally different error pattern than BM25's lexical false positives. <b>Essentially, the goal was to train a CNN to find patterns that translate to relevance, but in reality it learned patterns that translate to high lexical matches.</b> High lexical matches in the top 100 correlate with irrelevance, but the injected gold documents, by virtue of not being in the top 100, don't have high lexical matches. When expanding to the top 1000, the bottom 900 also lack high lexical matches, so whatever signal the CNN learned collapses (gold and the bottom 900 become indistinguishable).</p>
 
-                <p>Correlation analysis between matrix features and CNN scores reveals the mechanism:</p>
-
-                <table style="width: 80%;">
-                    <thead>
-                        <tr>
-                            <th>Feature</th>
-                            <th>Correlation</th>
-                            <th>Interpretation</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Matrix std</td>
-                            <td>-0.37</td>
-                            <td>Prefers uniform matrices</td>
-                        </tr>
-                        <tr>
-                            <td>Density </td>
-                            <td>-0.23</td>
-                            <td>Avoids strong token matches</td>
-                        </tr>
-                    </tbody>
-                </table>
-
                 <p>The CNN learned: <i>"flat, uniform matrices → relevant."</i> High variance and sparsity predict <i>low</i> CNN scores. The model captured texture statistics, not semantic relevance. Within BM25's top-100, a distributional quirk exists: gold documents exhibit dense but structured similarity patterns, while BM25 negatives show sharp lexical spikes. The CNN found a texture shortcut separating these classes. However, at ranks outside the top 100, many documents have uniform similarity (vague semantic overlap) with low variance, exactly what the CNN learned to prefer.</p>
 
                 <h4>The Fundamental Limitation.</h4>
