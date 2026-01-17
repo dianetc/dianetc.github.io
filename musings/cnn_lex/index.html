@@ -72,13 +72,36 @@
                 margin-top: 1.5em;
                 margin-bottom: 0.5em;
             }
+            .table-wrapper {
+                overflow-x: auto;
+                margin: 1.5em 0;
+                -webkit-overflow-scrolling: touch;
+            }
+            /* Responsive table styling */
+            @media (max-width: 768px) {
+                table {
+                    font-size: 0.75em;
+                }
+                th, td {
+                    padding: 0.35em 0.25em;
+                }
+            }
+            @media (max-width: 480px) {
+                table {
+                    font-size: 0.65em;
+                }
+                th, td {
+                    padding: 0.3em 0.2em;
+                }
+            }
         </style>
     </head>
     <body class="tl">
         <main class="pa4 center content-box mw7 lh-copy">
             <div class="mw6 ph1">
-		    <p>I recently spent a couple of days trying to train a convolutional neural network (CNN) to rerank documents using ColBERT similarity matrices as images. It appeared to double ColBERT's performance on various splits of BRIGHT, a reasoning-intensive retrieval benchmark (see below).</p> 
+		    <p>I recently spent a couple of days trying to train a convolutional neural network (CNN) to rerank documents using ColBERT similarity matrices as images. It appeared to double ColBERT's performance on various splits of BRIGHT, a reasoning-intensive retrieval benchmark (see below).</p>
 
+                <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
@@ -106,6 +129,7 @@
                         </tr>
                     </tbody>
                 </table>
+                </div>
                 <p class="caption">Table 1: Reranking performance (nDCG@10) with BM25 top-100 candidates (with gold documents additionally infused) on the test sets. For most splits, the CNN led to a 2× increase in nDCG@10.</p>
 
 		<p>Unfortunately, what initially seemed like a promising direction ended up being a dead end for reasons that, in hindsight, were obvious. The model learned spurious correlations and collapsed completely when tested on larger candidate sets. In this blog post, I'll detail my motivations for this direction, my implementation, and what went wrong.</p>
@@ -141,6 +165,7 @@
 
                 <p>Given the amazing results from Figure 1, my immediate next step was to test a trained model on an expanded candidate set. I wanted to see how the CNN performed when given BM25's top 250, 500, 750, and 1000. This is with the same test queries, only candidate depth changes. As shown below, the system collapsed <i>immediately</i>. I then retrained the CNN models, this time sampling from BM25's top 1000 instead of the top 100. This minimized the collapse, but the results were still unimpressive. The k=1000 model was much more robust but lost the sharp edge at top-100. What was going on?</p>
 
+                <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
@@ -179,6 +204,7 @@
                         </tr>
                     </tbody>
                 </table>
+                </div>
                 <p class="caption">Table 2: CNN performance on the Economics split across candidate set sizes. The k=100 model collapses catastrophically; the k=1000 model is more robust but loses its edge.</p>
 
                 <div id="collapse-visualization" style="margin: 3em 0;">
@@ -201,6 +227,7 @@
 
                 <p>Unfortunately, this proved unfruitful. The CNN models trained on k=100 didn't improve ColBERT's ranking. Initially, I believed recall might have been the issue, but using a stronger model as the intermediary, such as Qwen3-reranker-0.6B, didn't help either (Table 3).</p>
 
+<div class="table-wrapper">
 <table>
   <thead>
     <tr>
@@ -267,6 +294,7 @@
     </tr>
   </tbody>
 </table>
+</div>
 
 <p class="caption">
   Table 3: Pipeline results: CNN reranking the base model's top-100 (ColBERTv2 or Qwen3-Reranker-0.6B).
