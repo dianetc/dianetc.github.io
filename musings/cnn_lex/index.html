@@ -89,6 +89,8 @@
 
                 <p>Before I dive into how CNNs got mixed up in all of this, I'll first give a rough outline of how ColBERT, an older retrieval model, works. ColBERT is a <i>late interaction</i> model: it encodes queries and documents independently (like a dual encoder) but retains token-level embeddings rather than collapsing them into a single vector. The "late" refers to when query-document interaction occurs, after encoding, at scoring time, but at token granularity. Specifically, ColBERT builds a similarity matrix between query and document tokens, then derives a relevance score via MaxSim: the sum of maximum similarities for each query token across all document tokens.</p>
 
+                <h4>The Problem Formulation</h4>
+
                 <p>A natural question arises: do similarity matrices for query/gold-document pairings look different from their query/non-gold-document counterparts? More specifically, if we construct a similarity matrix and "highlight" the MaxSim at each row, do we see visual cues that allow us to differentiate between query/gold-doc, query/normal-doc, and query/bad-doc pairings? Here, I used BM25, a lexical method that is extremely cheap and fast, to initially rank the documents. I took the "normal doc" to be BM25's top-1 result and the "bad doc" to be one that falls outside the top 100. I tried this on a few queries, and you can see an example below:</p>
 
                 <img src="colbert_viz_aops_q99.png" alt="ColBERT similarity matrices visualization" style="max-width: 100%; margin: 1.5em auto; display: block;">
