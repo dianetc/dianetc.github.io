@@ -155,7 +155,7 @@
 
                 <h3>Building the Pipeline</h3>
 
-		<p>The goal was to see if a lightweight CNN could serve as an efficient final reranking step, even with minimal training data. I focused on the four hardest splits of BRIGHT: LeetCode, AoPS, Economics, and Robotics, training a separate CNN for each using only 30% of queries (30–42 queries per split). During training, the CNN saw only BM25's top 100 documents plus the gold documents (since BM25 has poor recall for reasoning-intensive queries). At test time, I applied the same setup: retrieve BM25's top 100, inject gold documents, shuffle, and let the CNN rerank.</p>
+		<p>The goal was to see if a lightweight CNN could serve as an efficient final reranking step, even with minimal training data. I focused on the four hardest splits of BRIGHT: LeetCode, AoPS, Economics, and Robotics, training a separate CNN for each using only 30% of queries (30–42 queries per split). During training, the CNN only saw samples (32-64) from BM25's top 100 documents plus the gold documents. We have to inject gold documents <i>since BM25 has poor recall for reasoning-intensive queries</i>. At test time, I applied the same setup: retrieve BM25's top 100, inject gold documents, shuffle, and let the CNN rerank.</p>
 
 		<h3> Training the CNN</h3>
 
