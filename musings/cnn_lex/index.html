@@ -307,7 +307,7 @@
 
                 <p>The CNN learned: <i>"flat, uniform matrices → relevant."</i> High variance and sparsity predict <i>low</i> CNN scores. The model captured texture statistics, not semantic relevance. Within BM25's top-100, a distributional quirk exists: gold documents exhibit dense but structured similarity patterns, while BM25 negatives show sharp lexical spikes. The CNN found a texture shortcut separating these classes. However, at ranks outside the top 100, many documents have uniform similarity (vague semantic overlap) with low variance, exactly what the CNN learned to prefer.</p>
 
-                <h4>The Fundamental Limitation.</h4>
+                <h4>The Fundamental Limitation</h4>
 
                 <p>This failure reveals a deeper issue. Similarity matrices capture <i>which</i> tokens align and <i>how many</i> align, but not <i>how they logically connect</i>. For reasoning-intensive retrieval, relevance depends on token interactions <i>within</i> the document which is structure that is invisible to the query-document similarity matrix. A gold document and a plausible-but-wrong document may have identical similarity matrices, both flat and distributed. The difference lies in the reasoning structure: how evidence chains together to answer the query. This structure exists <i>within</i> the document, in <i>how</i> its content interacts to answer the query but that isn't clear from a similarity matrix alone.</p>
 
