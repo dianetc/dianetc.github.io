@@ -157,7 +157,7 @@
 
 		<p>The goal was to see if a lightweight CNN could serve as an efficient final reranking step, even with minimal training data. I focused on the four hardest splits of BRIGHT: LeetCode, AoPS, Economics, and Robotics, training a separate CNN for each using only 30% of queries (30–42 queries per split). During training, the CNN only saw samples (32-64/query) from BM25's top 100 documents plus the gold documents. We have to inject gold documents <i>since BM25 has poor recall for reasoning-intensive queries</i>. At test time, I applied the same setup: retrieve BM25's top 100, inject gold documents, shuffle, and let the CNN rerank.</p>
 
-		<h3> Training the CNN</h3>
+		<h4> Training the CNN</h4>
 
                 <p>The CNN treats ColBERT similarity matrices as 128×128 grayscale images, using a 4-layer architecture (32 → 64 → 128 → 256 channels) with batch normalization, followed by an MLP head. Specifically, ColBERT (frozen) produces a similarity matrix, which is resized to 128×128 and treated as a grayscale image. The CNN progressively increases channels (1 → 32 → 64 → 128 → 256) while halving spatial dimensions (128 → 64 → 32 → 16 → 8) via max pooling. The final 8×8×256 = 16,384 features are flattened and passed through an MLP (16384 → 256 → 128 → 1) to produce a single relevance score. Training used listwise cross-entropy loss over candidate documents, with learning rate 10<sup>-4</sup>, AdamW optimizer, and 15 epochs.</p>
 
@@ -208,7 +208,7 @@
                 <p class="caption">Table 2: CNN performance on the Economics split across candidate set sizes. The k=100 model collapses catastrophically; the k=1000 model is more robust but loses its edge.</p>
 
                 <div id="collapse-visualization" style="margin: 3em 0;">
-                    <h3>Visualizing the Collapse</h3>
+                    <h4>Visualizing the Collapse</h4>
                     <p style="color: #666; margin-bottom: 1.5em; line-height: 1.6;">
                         CNN-Sim shows a 2× improvement over ColBERTv2 when reranking BM25's top-100...
                         but catastrophically fails when the candidate set expands. The model trained on k=100
@@ -221,7 +221,7 @@
                     </div>
                 </div>
 
-                <h3>CNN Reranks ColBERTv2's Ranking</h3>
+                <h3>Pipeline Augmentation</h3>
 
                 <p>I decided to change the pipeline: have ColBERT first rerank the documents given BM25's top 1000 (with gold documents infused), then have the CNN rerank ColBERT's rankings.</p>
 
